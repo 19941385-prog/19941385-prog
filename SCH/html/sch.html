@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aplicación de Carga Horaria</title>
+<link rel="stylesheet" href="../css/sch.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <div class="brand__logo">H<span>/</span>C</div>
+      <p class="brand__title">APLICACIÓN DE<br>CARGA HORARIA</p>
+    </div>
+
+    <nav class="sidebar__nav">
+      <a href="#" class="nav__item is-active" data-section="inicio">
+        <span class="nav__icon">🏠</span> Inicio
+      </a>
+      <a href="#" class="nav__item" data-section="asignaciones">
+        <span class="nav__icon">🗂️</span> Asignaciones
+      </a>
+      <a href="#" class="nav__item" data-section="horarios">
+        <span class="nav__icon">🕒</span> Horarios
+      </a>
+      <a href="#" class="nav__item" data-section="docentes">
+        <span class="nav__icon">👥</span> Docentes
+      </a>
+      <a href="#" class="nav__item" data-section="reportes">
+        <span class="nav__icon">📄</span> Reportes
+      </a>
+      <a href="#" class="nav__item" data-section="configuracion">
+        <span class="nav__icon">⚙️</span> Configuración
+      </a>
+    </nav>
+
+    <button class="sidebar__logout" id="logoutBtn">
+      <span class="nav__icon">⏻</span> Cerrar sesión
+    </button>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- HEADER -->
+    <header class="topbar">
+      <div>
+        <h1>¡Bienvenido, <span class="accent">Sachiel!</span></h1>
+        <p class="topbar__subtitle" id="topbarSubtitle">Gestiona la carga horaria de manera sencilla y eficiente.</p>
+      </div>
+
+      <div class="topbar__right">
+        <button class="icon-btn" id="notifBtn" aria-label="Notificaciones">
+          🔔
+          <span class="badge" id="notifBadge">3</span>
+        </button>
+
+        <div class="user-menu" id="userMenu">
+          <div class="user-avatar">👤</div>
+          <div class="user-info">
+            <strong>Sachiel Meléndez</strong>
+            <span>Administrador</span>
+          </div>
+          <span class="chevron">▾</span>
+        </div>
+      </div>
+
+      <!-- Notifications dropdown -->
+      <div class="notif-dropdown" id="notifDropdown">
+        <h4>Notificaciones</h4>
+        <ul id="notifList">
+          <li>📌 Nueva asignación pendiente por revisar</li>
+          <li>⚠️ Conflicto de horario: Aula 103, Miércoles 9:00</li>
+          <li>✅ Reporte semanal generado correctamente</li>
+        </ul>
+      </div>
+    </header>
+
+    <!-- ================= VISTA: INICIO ================= -->
+    <div class="view is-active" id="view-inicio">
+
+      <!-- STAT CARDS -->
+      <section class="stats" id="statsSection">
+        <div class="stat-card">
+          <div class="stat-card__icon">🕒</div>
+          <div>
+            <p class="stat-card__label">Horas Asignadas</p>
+            <p class="stat-card__value" id="statHoras">0</p>
+            <p class="stat-card__sub">Horas esta semana</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon">📖</div>
+          <div>
+            <p class="stat-card__label">Asignaturas</p>
+            <p class="stat-card__value" id="statAsignaturas">0</p>
+            <p class="stat-card__sub">Asignaturas activas</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon">🧑‍🏫</div>
+          <div>
+            <p class="stat-card__label">Docentes</p>
+            <p class="stat-card__value" id="statDocentes">0</p>
+            <p class="stat-card__sub">Docentes registrados</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon">👥</div>
+          <div>
+            <p class="stat-card__label">Grupos</p>
+            <p class="stat-card__value" id="statGrupos">0</p>
+            <p class="stat-card__sub">Grupos activos</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTENT GRID -->
+      <section class="content-grid">
+
+        <!-- SCHEDULE PANEL -->
+        <div class="panel schedule-panel">
+          <div class="panel__header">
+            <h2>📅 Carga Horaria Semanal</h2>
+            <select id="weekSelect">
+              <option>Semana Actual</option>
+              <option>Semana Anterior</option>
+              <option>Próxima Semana</option>
+            </select>
+          </div>
+
+          <div class="table-wrap">
+            <table class="schedule-table" id="scheduleTable">
+              <thead>
+                <tr>
+                  <th>Hora</th>
+                  <th>Lunes</th>
+                  <th>Martes</th>
+                  <th>Miércoles</th>
+                  <th>Jueves</th>
+                  <th>Viernes</th>
+                </tr>
+              </thead>
+              <tbody id="scheduleBody">
+                <!-- filled by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SIDE COLUMN -->
+        <div class="side-col">
+
+          <!-- CALENDAR -->
+          <div class="panel calendar-panel">
+            <div class="panel__header">
+              <h2>📆 Calendario</h2>
+            </div>
+            <div class="calendar__nav">
+              <button id="prevMonth">‹</button>
+              <span id="calendarLabel">Mayo 2024</span>
+              <button id="nextMonth">›</button>
+            </div>
+            <div class="calendar__grid" id="calendarGrid">
+              <!-- filled by JS -->
+            </div>
+          </div>
+
+          <!-- QUICK ACTIONS -->
+          <div class="panel actions-panel">
+            <div class="panel__header">
+              <h2>⚡ Acciones rápidas</h2>
+            </div>
+            <button class="action-btn" id="btnNuevaAsignacion">➕ Nueva asignación</button>
+            <button class="action-btn" id="btnVerHorarios">📅 Ver horarios</button>
+            <button class="action-btn" id="btnGenerarReporte">📋 Generar reporte</button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ================= NOSOTROS: MISIÓN / VISIÓN / IDEA DE NEGOCIO / VALORES ================= -->
+      <section class="panel about-panel" id="aboutSection">
+        <div class="panel__header">
+          <h2>🏫 Sobre la institución</h2>
+        </div>
+
+        <div class="about-grid">
+          <div class="about-card">
+            <div class="about-card__icon">🎯</div>
+            <h3>Misión</h3>
+            <p>Optimizar la gestión de la carga horaria académica mediante una plataforma digital simple y confiable, facilitando la organización de docentes, aulas y horarios para instituciones educativas.</p>
+          </div>
+
+          <div class="about-card">
+            <div class="about-card__icon">🔭</div>
+            <h3>Visión</h3>
+            <p>Ser la herramienta de referencia en la gestión de horarios académicos de instituciones educativas de la región, reconocida por su eficiencia, accesibilidad y capacidad de adaptación a las necesidades de cada centro.</p>
+          </div>
+
+          <div class="about-card">
+            <div class="about-card__icon">💡</div>
+            <h3>Idea de negocio</h3>
+            <p>Plataforma SaaS de bajo costo para colegios, institutos y universidades que automatiza la creación, gestión y reporte de horarios docentes, con planes escalables según el número de docentes y grupos atendidos.</p>
+          </div>
+
+          <div class="about-card">
+            <div class="about-card__icon">⭐</div>
+            <h3>Valores y principios</h3>
+            <ul class="about-card__list">
+              <li>Transparencia en la gestión de la información</li>
+              <li>Eficiencia y simplicidad en cada proceso</li>
+              <li>Compromiso con las instituciones educativas</li>
+              <li>Innovación constante</li>
+              <li>Trabajo en equipo</li>
+              <li>Mejora continua</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ================= VISTA: ASIGNACIONES ================= -->
+    <div class="view" id="view-asignaciones">
+      <section class="panel">
+        <div class="panel__header">
+          <h2>🗂️ Asignaciones</h2>
+          <button class="action-btn action-btn--primary action-btn--inline" id="btnNuevaAsignacion2">➕ Nueva asignación</button>
+        </div>
+        <div class="table-wrap">
+          <table class="schedule-table" id="assignmentsTable">
+            <thead>
+              <tr>
+                <th>Asignatura</th>
+                <th>Docente</th>
+                <th>Grupo</th>
+                <th>Aula</th>
+                <th>Día</th>
+                <th>Hora</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="assignmentsBody">
+              <!-- filled by JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= VISTA: HORARIOS ================= -->
+    <div class="view" id="view-horarios">
+      <section class="panel schedule-panel">
+        <div class="panel__header">
+          <h2>🕒 Horarios completos</h2>
+          <select id="weekSelect2">
+            <option>Semana Actual</option>
+            <option>Semana Anterior</option>
+            <option>Próxima Semana</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table class="schedule-table" id="scheduleTableFull">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Lunes</th>
+                <th>Martes</th>
+                <th>Miércoles</th>
+                <th>Jueves</th>
+                <th>Viernes</th>
+              </tr>
+            </thead>
+            <tbody id="scheduleBodyFull">
+              <!-- filled by JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= VISTA: DOCENTES ================= -->
+    <div class="view" id="view-docentes">
+      <section class="panel">
+        <div class="panel__header">
+          <h2>👥 Docentes</h2>
+        </div>
+        <div class="docentes-grid" id="docentesGrid">
+          <!-- filled by JS -->
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= VISTA: REPORTES ================= -->
+    <div class="view" id="view-reportes">
+      <section class="panel">
+        <div class="panel__header">
+          <h2>📄 Reportes</h2>
+        </div>
+        <div class="reports-actions">
+          <button class="action-btn" data-report="asignaciones">📋 Reporte de asignaciones</button>
+          <button class="action-btn" data-report="docentes">🧑‍🏫 Reporte por docente</button>
+          <button class="action-btn" data-report="aulas">🏫 Reporte de uso de aulas</button>
+        </div>
+        <h3 class="reports-history__title">Historial de reportes</h3>
+        <ul class="reports-history" id="reportsHistory">
+          <!-- filled by JS -->
+        </ul>
+      </section>
+    </div>
+
+    <!-- ================= VISTA: CONFIGURACIÓN ================= -->
+    <div class="view" id="view-configuracion">
+      <section class="panel">
+        <div class="panel__header">
+          <h2>⚙️ Configuración</h2>
+        </div>
+
+        <form id="settingsForm" class="modal__form settings-form">
+
+          <div class="settings-section">
+            <h3>Notificaciones</h3>
+            <label class="settings-checkbox">
+              <input type="checkbox" id="cfgNotifications" checked>
+              Mostrar notificaciones en la campana
+            </label>
+          </div>
+
+          <div class="settings-section">
+            <h3>Información de contacto</h3>
+            <label>
+              Correo institucional
+              <input type="email" id="cfgEmail" placeholder="contacto@escuela.edu">
+            </label>
+            <label>
+              Teléfono
+              <input type="tel" id="cfgPhone" placeholder="Ej. 8888-0000">
+            </label>
+            <label>
+              Dirección
+              <input type="text" id="cfgAddress" placeholder="Ej. San Salvador, El Salvador">
+            </label>
+          </div>
+
+          <div class="settings-section">
+            <h3>Redes sociales</h3>
+            <label>
+              Facebook
+              <input type="url" id="cfgFacebook" placeholder="https://facebook.com/tu-institucion">
+            </label>
+            <label>
+              Instagram
+              <input type="url" id="cfgInstagram" placeholder="https://instagram.com/tu-institucion">
+            </label>
+            <label>
+              X (Twitter)
+              <input type="url" id="cfgTwitter" placeholder="https://x.com/tu-institucion">
+            </label>
+            <label>
+              LinkedIn
+              <input type="url" id="cfgLinkedin" placeholder="https://linkedin.com/company/tu-institucion">
+            </label>
+          </div>
+
+          <button type="submit" class="action-btn action-btn--primary">Guardar cambios</button>
+        </form>
+      </section>
+    </div>
+
+    <footer class="footer" id="appFooter">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <div class="brand__logo">H<span>/</span>C</div>
+          <p>Aplicación de<br>Carga Horaria</p>
+        </div>
+
+        <div class="footer__block">
+          <h4>Contacto</h4>
+          <ul class="footer__contact" id="footerContact">
+            <!-- filled by JS -->
+          </ul>
+        </div>
+
+        <div class="footer__block">
+          <h4>Síguenos</h4>
+          <div class="footer__social" id="footerSocial">
+            <!-- filled by JS -->
+          </div>
+        </div>
+      </div>
+
+      <p class="footer__copy">© 2026 Aplicación de Carga Horaria. Todos los derechos reservados.</p>
+    </footer>
+  </div>
+</div>
+
+<!-- MODAL: Nueva asignación -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal__header">
+      <h3>Nueva asignación</h3>
+      <button class="modal__close" id="modalClose">✕</button>
+    </div>
+    <form id="assignmentForm" class="modal__form">
+      <label>
+        Asignatura
+        <input type="text" id="formAsignatura" placeholder="Ej. Matemática" required>
+      </label>
+      <label>
+        Docente
+        <input type="text" id="formDocente" list="docentesList" placeholder="Ej. Prof. López" required>
+        <datalist id="docentesList"></datalist>
+      </label>
+      <label>
+        Grupo
+        <input type="text" id="formGrupo" placeholder="Ej. Grupo 1A" required>
+      </label>
+      <label>
+        Aula
+        <input type="text" id="formAula" placeholder="Ej. Aula 101" required>
+      </label>
+      <div class="modal__row">
+        <label>
+          Día
+          <select id="formDia">
+            <option>Lunes</option>
+            <option>Martes</option>
+            <option>Miércoles</option>
+            <option>Jueves</option>
+            <option>Viernes</option>
+          </select>
+        </label>
+        <label>
+          Hora
+          <select id="formHora"></select>
+        </label>
+      </div>
+      <button type="submit" class="action-btn action-btn--primary">Guardar asignación</button>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="../js/sch.js"></script>
+</body>
+</html>
